@@ -84,7 +84,6 @@ select{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);bord
 
 <div class="wrap">
   <div class="intro">
-    <label class="who" for="who">اسمك (يطلع جنب أجوبتك)<input id="who" maxlength="40" placeholder="مثلاً: راشد"></label>
     <div class="legend"><span class="tag need">يبي رقم منكم</span><span class="tag ok">عندي جزء من جوابه</span><span class="tag skip">نتخطاه</span></div>
   </div>
   <div class="grid">
@@ -161,9 +160,7 @@ const key=n=>"q"+String(n).replace(/\./g,"-");
 const fields={}; // key -> {el, meta, dirty, timer, saving}
 const FS="https://firestore.googleapis.com/v1/projects/ahdaf-influencers/databases/(default)/documents";
 const DOC=k=>"projects/ahdaf-influencers/databases/(default)/documents/keemart_rfq/"+k;
-const whoEl=document.getElementById("who");
-try{whoEl.value=localStorage.getItem("rfq_who")||""}catch(e){}
-whoEl.addEventListener("input",()=>{try{localStorage.setItem("rfq_who",whoEl.value.trim())}catch(e){}});
+const whoEl={value:""};
 
 const rail=document.getElementById("rail"), main=document.getElementById("main");
 function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
