@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>استبيان كيمارت RFQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: sticky progress header, section rail on wide screens, one column of question sheets */
+:root{
+  --bg:#F6F3FA; --paper:#FFFFFF; --ink:#1C1427; --mute:#6E6680; --line:#E4DDEE;
+  --accent:#4C0192; --accent-soft:#EFE6FA; --done:#1F7A55; --done-soft:#E3F3EB; --warn:#8A5A00; --warn-soft:#FFF3D6;
+  --ff:"IBM Plex Sans Arabic",system-ui,sans-serif; --fm:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#130D1C; --paper:#1D1529; --ink:#F1ECF8; --mute:#A89DBB; --line:#33284A;
+  --accent:#B98AF2; --accent-soft:#2C1F44; --done:#6FD3A4; --done-soft:#16302A; --warn:#F2C46B; --warn-soft:#3A2E14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#130D1C; --paper:#1D1529; --ink:#F1ECF8; --mute:#A89DBB; --line:#33284A;
+  --accent:#B98AF2; --accent-soft:#2C1F44; --done:#6FD3A4; --done-soft:#16302A; --warn:#F2C46B; --warn-soft:#3A2E14; color-scheme:dark}
+*{box-sizing:border-box}
+body{direction:rtl;background:var(--bg);color:var(--ink);font-family:var(--ff);font-size:16px;line-height:1.7;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 80px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:18px}
+.brand small{display:block;font-weight:500;font-size:13px;color:var(--mute)}
+.prog{flex:1;min-width:180px;display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s}
+.prog b{font-family:var(--fm);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.status{font-size:13px;color:var(--mute)}
+.status.err{color:var(--warn)}
+.intro{padding-block:32px 8px;max-width:720px}
+.intro h1{font-size:30px;line-height:1.3;margin:0 0 10px;text-wrap:balance}
+.intro p{margin:0 0 8px;color:var(--mute)}
+.who{display:flex;flex-direction:column;gap:6px;margin-top:16px;font-size:14px;font-weight:600;max-width:320px}
+.who input{font:inherit;font-weight:400;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.who input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:13px}
+.grid{display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start;margin-top:24px}
+nav.rail{position:sticky;top:90px;display:flex;flex-direction:column;gap:2px}
+nav.rail a{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:14px}
+nav.rail a:hover,nav.rail a:focus-visible{background:var(--accent-soft);outline:none}
+nav.rail a span{font-family:var(--fm);font-size:12px;color:var(--mute)}
+main{min-width:0;display:flex;flex-direction:column;gap:40px}
+section h2{font-size:21px;margin:0 0 4px}
+section .sub{color:var(--mute);font-size:14px;margin:0 0 16px}
+.qs{display:flex;flex-direction:column;gap:14px}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.q.filled{border-color:color-mix(in srgb,var(--done) 45%,var(--line))}
+.qh{display:flex;gap:12px;align-items:flex-start}
+.num{font-family:var(--fm);font-size:13px;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:2px 8px;flex:none;margin-top:3px}
+.qt{font-weight:600;min-width:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;border-radius:99px;padding:1px 10px;font-weight:500}
+.tag.need{background:var(--warn-soft);color:var(--warn)}
+.tag.ok{background:var(--done-soft);color:var(--done)}
+.tag.skip{background:var(--line);color:var(--mute)}
+.hint{font-size:14px;color:var(--mute);background:var(--bg);border-radius:10px;padding:8px 12px}
+details{font-size:14px;color:var(--mute)}
+details summary{cursor:pointer;width:fit-content}
+details p{direction:ltr;text-align:left;margin:6px 0 0;font-size:13.5px;line-height:1.6}
+textarea{width:100%;min-height:88px;resize:vertical;font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+textarea:disabled{opacity:.6}
+.att{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.meta{font-size:12.5px;color:var(--mute);min-height:1.2em}
+.meta.saving{color:var(--accent)}
+@media (max-width:820px){.grid{grid-template-columns:1fr}nav.rail{display:none}.intro h1{font-size:25px}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">استبيان كيمارت<small>أهداف × Keemart RFQ 2026</small></div>
+  <div class="prog"><div class="bar"><i id="bar"></i></div><b id="count">0 / 0</b></div>
+  <div class="status" id="conn">يحمّل…</div>
+</div></header>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>جاوبوا على أسئلة كيمارت، وأنا أصيغها بالإنجليزي</h1>
+    <p>اكتبوا الجواب بالعربي وبكلامكم، أرقام حقيقية وتفاصيل. أي شي تكتبونه ينحفظ لحاله، ويشوفه أي أحد فاتح الرابط خلال ثواني.</p>
+    <p>كل سؤال تحته نصه الأصلي بالإنجليزي لو تبون تتأكدون من المطلوب.</p>
+    <label class="who" for="who">اسمك (يطلع جنب أجوبتك)<input id="who" maxlength="40" placeholder="مثلاً: راشد"></label>
+    <div class="legend"><span class="tag need">يبي رقم منكم</span><span class="tag ok">عندي جزء من جوابه</span><span class="tag skip">نتخطاه</span></div>
+  </div>
+  <div class="grid">
+    <nav class="rail" id="rail"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+
+<script>
+const SECTIONS=[
+ {id:"s1",t:"الشركة وقدراتها",sub:"مين أهداف، وين مكتبها، ووش سوت قبل.",qs:[
+  ["1.1","عندكم مكتب أو موظفين دوام كامل بالسعودية؟ وين المكتب، وكم عدد الموظفين؟","need","Does your company have an office or full-time employees in Saudi Arabia? Please provide office location(s) and total FTE count."],
+  ["1.2","كم واحد بفريق الإبداع أو الاستراتيجية يتكلم عربي؟","need","Do you have creative/strategy team members who speaks Arabic?"],
+  ["1.3","وش المنصات اللي تشتغلون عليها، وكم نسبة كل وحدة من شغلكم؟ (تيك توك، سناب، انستقرام، يوتيوب، X، غيرها)","need","What are your main service channels and what percentage of business does each represent?"],
+  ["1.4","غير التواصل مع المؤثرين، وش الخدمات اللي تقدمونها؟ (إبداع، اختيار مؤثرين، كشف تلاعب، بريف، تنفيذ، تقارير)","ok","Besides influencer liaison, do you offer full-service solutions? (Creative, discovery, fraud check, briefing, execution, reporting)","هذا أقدر أكتبه من بروفايل أهداف. أضيفوا أي خدمة ناقصة."],
+  ["1.5","أنجح حملة إلى ثلاث بالسعودية آخر سنة، مع الأرقام.","skip","Please list the 1-3 most successful influencer marketing cases in Saudi Arabia over the past year (Brand, Industry, Platform, Number of Influencers, Key Results, Views/Impressions, Transactions/GMV). Also: long-term partnerships, average monthly number of successfully delivered influencers, viral cases.","كيمارت قالت نتخطاه لأننا أرسلنا التقرير. بس لو تعرفون متوسط عدد المؤثرين اللي ننفذ معهم بالشهر، اكتبوه هنا."],
+  ["1.6","عندكم خبرة مع تطبيقات توصيل أو بقالة أو منتجات استهلاكية أو تجارة إلكترونية؟","ok","Bonus: Do you have experience with instant delivery, grocery, FMCG, or e-commerce brands?","عندي: نينجا، نون مينتس، نعناع، جازي، ليز. أضيفوا غيرها لو فيه."],
+  ["1.7","كم حجم تعاملاتكم مع المؤثرين بالسنة بالريال؟ وكم مؤثر في قاعدة بياناتكم؟","need","Please provide annual influencer transaction volume (SAR) and total influencer database size."]
+ ]},
+ {id:"s2",t:"قاعدة المؤثرين",sub:"كم مؤثر عندكم، وكيف تختارونهم وتتأكدون منهم.",qs:[
+  ["2.1","كيف تصنفون المؤثرين؟ (حسب المتابعين أو غيرها) ولو تصنيفكم يختلف عن S/A/B/C حقهم، وش يقابله؟","ok","How do you classify influencers? Please provide your tiering methodology, including follower ranges and other key criteria. If it differs from S/A/B/C, provide a mapping."],
+  ["2.2","كم صانع محتوى تيك توك نشط عندكم بالسعودية؟ موزعين حسب الفئة (خصوصاً B و C)، والمجالات، والمدن. وكم نسبة اللي اشتغلتوا معهم آخر 6 شهور؟ وعطونا 10 أمثلة لمؤثرين فوق المليون (المتابعين، التفاعل، المجال، المدينة).","need","How many active TikTok creators do you cover in Saudi Arabia? Breakdown by tier (esp. B/C), verticals, cities. Proportion who collaborated in the past 6 months (with proof). Plus 10 examples of 1M+ creators with followers, ER, vertical, city."],
+  ["2.3","تقدرون تجيبون بيانات جمهور المؤثر (الدولة، المدينة، العمر، الجنس) مع سكرين شوت من سناب وتيك توك وانستقرام؟","ok","Can you provide fan profile data (views, country, city, age, gender) with screenshot proof for Snapchat/TikTok/Instagram?","العقد يلزمنا بسكرين شوت للجمهور السعودي والنسائي. اكتبوا لو فيه منصة صعب نجيب منها."],
+  ["2.4","وش الأدوات أو الطريقة اللي تستخدمونها عشان تكشفون المتابعين الوهميين والتلاعب بالأرقام؟","need","What fraud detection and audience authenticity verification tools or methodologies do you use? Specify tools and key metrics/checks."],
+  ["2.5","كم الـCPM عندكم تقريباً لكل منصة ولكل فئة؟ وتحسبونه على وش؟ (مشاهدات متوقعة، فعلية، وصول، ظهور)","need","Indicative CPM ranges (SAR) by platform and influencer tier, and the basis of calculation (estimated views, actual views, reach, impressions)."],
+  ["2.6","كيمارت تستهدف سعوديات من 18 إلى 35، والهدف وعي وتحميل التطبيق. وش نوع المؤثرين والمحتوى اللي تنصحون فيه؟ وليش؟","ok","For Keemart, targeting Saudi women 18–35 (awareness + app downloads), what influencer types and content categories would you recommend, and why?","أقدر أكتبه من البريف. لو عندكم رأي أو أسماء محددة اكتبوها."],
+  ["2.7","كم مؤثر جديد ونشط أضفتوا آخر 6 شهور؟ وكم نسبتهم من قاعدتكم؟ وعلى وش تقبلون المؤثر الجديد؟","need","Over the past 6 months, how many newly onboarded active KOLs have you added? What % of your active base? Onboarding criteria?"],
+  ["2.8","عندكم فريق مخصص يجيب مؤثرين جدد؟ كم عددهم، ووش المدن اللي يغطونها؟","need","Do you have a dedicated BD / KOL acquisition team in Saudi Arabia? Team size and cities covered."],
+  ["2.9","من وين تجيبون المؤثرين الجدد، وكم نسبة كل طريقة تقريباً؟ (تواصل مباشر، وكالات مواهب، ترشيح من المنصات، هم يتواصلون معكم)","need","Main channels for acquiring new KOLs and approximate proportion of each (direct, MCN/talent agency, platform referrals, inbound)."],
+  ["2.10","عندكم شراكات طويلة مع وكالات مواهب أو شبكات صناع محتوى أو منصات بالسعودية؟ مين، ووش نوع الشراكة؟","need","Any strategic/long-term partnerships with local MCNs, talent agencies, creator networks or platforms? Partner names and type."]
+ ]},
+ {id:"s3",t:"شروط التعاون",sub:"الأسعار والحقوق والتقارير.",qs:[
+  ["3.1","السعر اللي نعطيه بالعرض هو نفسه السعر النهائي؟ ونقدر نثبت الأسعار لعقد 6 شهور أو أكثر؟ وكم مدة صلاحية عروض الأسعار عندكم؟","need","Are quoted influencer rates consistent with final confirmed rates? Can you lock rates for 6+ month contracts? Pricing validity policy."],
+  ["3.2","لو سعر المؤثر أعلى من اللي تبيه كيمارت، تقدرون تفاوضونه؟ كيف، وكم الخصم اللي توصلون له عادة؟ (أمثلة لو فيه)","need","When an influencer's CPM exceeds Keemart's benchmark, can you negotiate? Approach, typical discount range, success rate or examples."],
+  ["3.3","لو كيمارت اتفقت مع مؤثر على منصة وحدة، يقدر ينشر نفس المقطع على حساباته الثانية مجاناً؟ وبأي شروط؟","need","If engaged for one platform, can the same content be posted on the influencer's other platforms at no extra cost? Conditions?"],
+  ["3.4","تقدر كيمارت تعيد نشر مقاطع المؤثر على حساباتها الرسمية مجاناً؟ لكم مدة، ووش القيود؟","need","Can Keemart repost influencer videos on its official channels at no extra cost? Usage rights, duration, restrictions.","بملاحظات العقد اقترحنا مدة محددة (مثلاً 3 أشهر) وتتسعّر بعمود copyright. وش تبون نلتزم فيه؟"],
+  ["3.5","تقدمون تقرير أداء بعد النشر بـ24 ساعة على الأقل، مع سكرين شوت للمشاهدات والوصول والتفاعل؟ (لو عندكم نموذج تقرير، قولوا لي وين)","ok","Can you provide post-performance data and screenshots (views, reach, impressions, engagement) captured at least 24h after posting? Provide sample reporting screenshots."]
+ ]},
+ {id:"s4",t:"التنفيذ",sub:"المدد، والتعديلات، والمتابعة أثناء الحملة. أغلبها التزمنا فيه بالعقد.",qs:[
+  ["4.1","خلال يومين عمل من البريف، تقدرون ترسلون قائمة أولية ضعف العدد المطلوب، و60% منها مطابقة لشروطهم؟ ولو اعتذر أحد، تعوضونه كل يومين لين يكتمل العدد؟","ok","Within 2 working days of a brief, can you provide a shortlist of 2x the required quantity with 60%+ meeting criteria? If below 60% or cancellations, rolling replacements every 2 calendar days?","العقد يلزمنا بالقائمة خلال يومي عمل وتحديث يومي. أكدوا إن الضعف و60% واقعي."],
+  ["4.2","لو كيمارت رشحت مؤثرين بأسمائهم، تتواصلون معهم خلال يومين عمل وتردون بالسعر والتوفر؟","ok","If Keemart recommends specific influencers, can you contact them within 2 working days with availability and rate?"],
+  ["4.3","كم ياخذ كل مرحلة عندكم عادة؟ اختيار المؤثرين، تأكيدهم، السكربت، التصوير، مراجعة المسودة، الاعتماد، النشر. (عادي، وعاجل، وعاجل بالويكند)","ok","Standard end-to-end turnaround per stage: Shortlisting → Confirmation → Script → Production → Draft review → Final approval → Posting.","من العقد: السكربت خلال يوم، المسودة الأولى 2 إلى 3 أيام، النهائية 3 إلى 5 أيام. عدّلوا لو الواقع غير."],
+  ["4.4","كم سرعة ردكم على الطلبات العاجلة؟ بالدوام، وبالويكند والإجازات.","ok","Committed response-time SLA for urgent requests: working hours and weekends/public holidays.","من العقد: ساعة عمل بالدوام، و4 ساعات بالويكند للعاجل."],
+  ["4.5","تعدّلون السكربت لين يطابق البريف؟ وبعد اعتماده تقبلون 3 جولات تعديل على الفيديو؟ ولو المؤثر رفض يعدّل، وش تسوون؟","need","Script revisions until compliant; up to 3 rounds of video draft revisions after script approval; escalation if the influencer refuses."],
+  ["4.6","ترسلون تحديث يومي عن المؤثرين والنشر أثناء الحملة؟ بأي شكل؟ (شيت، قروب، تقرير)","ok","Daily updates on collaboration and posting progress during execution? Tracking/reporting format."],
+  ["4.7","لو تأخر نشر مؤثر أكثر من يومين عن الموعد، وش تسوون؟ (تصعيد، بديل)","need","If posting is delayed 2+ calendar days, remedial measures, escalation process, backup solutions."],
+  ["4.8","تتابعون أداء الحملة أثناءها (مشاهدات، تفاعل، وصول)؟ كل كم ترسلون تحديث، وبأي شكل، وكم ياخذ التقرير النهائي؟","ok","Ongoing performance monitoring: metrics, frequency (e.g. weekly), format, and timeline for the final post-campaign report.","من العقد: كشف شهري بحد أقصى يوم 5، وتقرير نهائي خلال 5 أيام عمل."],
+  ["4.9","توجّهون المؤثر قبل التصوير؟ كيف تشرحون له البريف، وتراجعون الجودة، والبداية القوية (الهوك)، وطريقة كل منصة؟","need","Content training/guidance for creators before production: briefing, coaching, QC, structure, storytelling, hooks, platform best practices."],
+  ["4.10","كيف تستفيدون من الترندات وفهمكم للمؤثرين عشان يطلع محتوى قوي وينتشر؟ وعطونا مثال أو مثالين لمقطع انتشر.","need","How do you leverage trends and insights to develop potentially viral content? Approach, plus 1–2 examples of viral content."],
+  ["4.11","لو المحتوى ما وصل الهدف (مثلاً ولا مقطع وصل مليون مشاهدة بالسعودية)، وش تسوون؟ (تحسين المحتوى، مؤثرين إضافيين، بدائل)","need","If content misses the agreed target (e.g. none reaches 1M views in KSA), what optimization and contingency measures?"]
+ ]},
+ {id:"s5",t:"ضمان الخدمة",sub:"لو صار خطأ أو مشكلة مع مؤثر.",qs:[
+  ["5.1","عندكم تواصل طوارئ مباشر مع المؤثرين الكبار؟ ولو مؤثر ما نشر، أو اعتذر آخر لحظة، أو خالف، وش تسوون وبكم وقت تجيبون بديل؟","need","Dedicated emergency channels with key influencers? If an influencer fails to post, cancels last minute or breaches terms: escalation, response time, backup activation."],
+  ["5.2","كيف تتأكدون قبل النشر إن ما فيه أخطاء؟ (المنشن، الشعار، الرابط، كود الخصم، الهاشتاقات)","need","Pre-posting quality control to prevent errors in tags, logos, tracking links, discount codes and other requirements."],
+  ["5.3","لو مؤثر تلاعب بالأرقام أو خالف أو ما سلّم، وش تقدرون تسوون معه بالعقد أو بالدفع؟","need","If an influencer manipulates data, breaches requirements or fails to deliver, what contractual or payment measures can you take?","بالعقد كيمارت يحق لها تحجز أتعاب المؤثر. وش اللي بعقودنا مع المؤثرين يحمينا؟"],
+  ["5.4","لو أداء مقطع طلع أقل بكثير من المعتاد للمؤثر، كيف تكتشفونه وتعالجونه؟","need","Identifying and handling abnormal post performance well below the influencer's historical benchmark: investigation and remediation."],
+  ["5.5","تديرون الحملة كاملة من اختيار المؤثرين لين التقرير النهائي؟ وش معاييركم بكل مرحلة؟","ok","End-to-end management from sourcing to post-campaign reporting: service scope and standards at each stage.","أقدر أكتبه من الأجوبة اللي فوق، أضيفوا أي شي مميز عندكم."]
+ ]},
+ {id:"s6",t:"التسعير",sub:"30 مؤثر بأسعار مؤكدة وأتعاب الوكالة.",qs:[
+  ["6","يبون 30 مؤثر من البريف بأسعار مؤكدة لكل واحد، مع أتعاب الوكالة. هل الشيت اللي أرسلناه فيه 30 مؤثر بأسعارهم؟ ولو لا، كم ناقص؟","need","Please propose 30 influencers based on the campaign brief, all meeting the Keemart Influencer Criteria, with the confirmed rate for each and the agency fee. (For benchmarking only.)","أتعاب الوكالة 5% مثل العقد."]
+ ]}
+];
+const ATT=[
+  ["A.1","السجل التجاري","موجود عندي"],
+  ["A.2","إثبات مكتب بالسعودية (عقد إيجار أو العنوان الوطني)","العنوان الوطني اللي عندي منتهي"],
+  ["A.3","تقارير 3 حملات ناجحة أو أكثر بالأرقام","تقرير أعمالنا السابقة أرسلناه"],
+  ["A.4","10 مؤثرين تيك توك سعوديين فوق المليون مع أرقام التفاعل","نفس سؤال 2.2"],
+  ["A.5","إثبات حجم التعاملات وحجم قاعدة المؤثرين",""],
+  ["A.6","إثبات تعاونات آخر 6 شهور (سجلات أو تقارير أو سكرين شوتات)",""]
+];
+const TAG={need:["need","يبي رقم منكم"],ok:["ok","عندي جزء من جوابه"],skip:["skip","نتخطاه"]};
+const ATT_OPTS=["","موجود وبرسله","نرسله لاحقاً","ما عندنا"];
+const key=n=>"q"+String(n).replace(/\./g,"-");
+const fields={}; // key -> {el, meta, dirty, timer, saving}
+const FS="https://firestore.googleapis.com/v1/projects/ahdaf-influencers/databases/(default)/documents";
+const DOC=k=>"projects/ahdaf-influencers/databases/(default)/documents/keemart_rfq/"+k;
+const whoEl=document.getElementById("who");
+try{whoEl.value=localStorage.getItem("rfq_who")||""}catch(e){}
+whoEl.addEventListener("input",()=>{try{localStorage.setItem("rfq_who",whoEl.value.trim())}catch(e){}});
+
+const rail=document.getElementById("rail"), main=document.getElementById("main");
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+
+function buildQ(num,ar,tag,en,hint){
+  const k=key(num), card=el("article","q"); card.id=k;
+  const h=el("div","qh"); h.append(el("span","num",num), el("div","qt",ar)); card.append(h);
+  const tags=el("div","tags"); const t=TAG[tag]; tags.append(el("span","tag "+t[0],t[1])); card.append(tags);
+  if(hint) card.append(el("div","hint",hint));
+  const d=el("details"); d.append(el("summary",null,"السؤال الأصلي")); const p=el("p",null,en); d.append(p); card.append(d);
+  const ta=el("textarea"); ta.id="ta-"+k; ta.placeholder=tag==="skip"?"اختياري":"اكتبوا الجواب هنا"; card.append(ta);
+  const meta=el("div","meta"); card.append(meta);
+  fields[k]={el:ta,card,meta,dirty:false,timer:0,kind:"text",remote:null};
+  ta.addEventListener("input",()=>{fields[k].dirty=true;meta.textContent="يكتب…";meta.className="meta saving";clearTimeout(fields[k].timer);fields[k].timer=setTimeout(()=>save(k),1200);progress()});
+  ta.addEventListener("blur",()=>{if(fields[k].dirty){clearTimeout(fields[k].timer);save(k)}});
+  return card;
+}
+function buildAtt(num,ar,hint){
+  const k=key(num), card=el("article","q"); card.id=k;
+  const h=el("div","qh"); h.append(el("span","num",num), el("div","qt",ar)); card.append(h);
+  if(hint) card.append(el("div","hint",hint));
+  const row=el("div","att"); const s=el("select"); s.id="sel-"+k;
+  ATT_OPTS.forEach(o=>{const op=el("option",null,o||"وش وضعه؟");op.value=o;s.append(op)}); row.append(s); card.append(row);
+  const ta=el("textarea"); ta.id="ta-"+k; ta.placeholder="ملاحظة أو رابط الملف (درايف مثلاً)"; ta.style.minHeight="56px"; card.append(ta);
+  const meta=el("div","meta"); card.append(meta);
+  fields[k]={el:ta,sel:s,card,meta,dirty:false,timer:0,kind:"att",remote:null};
+  const onEdit=()=>{fields[k].dirty=true;meta.textContent="يكتب…";meta.className="meta saving";clearTimeout(fields[k].timer);fields[k].timer=setTimeout(()=>save(k),900);progress()};
+  ta.addEventListener("input",onEdit); s.addEventListener("change",()=>{onEdit();clearTimeout(fields[k].timer);save(k)});
+  ta.addEventListener("blur",()=>{if(fields[k].dirty){clearTimeout(fields[k].timer);save(k)}});
+  return card;
+}
+
+SECTIONS.forEach(s=>{
+  const sec=el("section"); sec.id=s.id; sec.append(el("h2",null,s.t), el("p","sub",s.sub));
+  const qs=el("div","qs"); s.qs.forEach(q=>qs.append(buildQ(...q))); sec.append(qs); main.append(sec);
+  const a=el("a"); a.href="#"+s.id; a.append(document.createTextNode(s.t)); const c=el("span"); c.dataset.sec=s.id; a.append(c); rail.append(a);
+});
+{const sec=el("section");sec.id="s7";sec.append(el("h2",null,"المرفقات"),el("p","sub","وش موجود وبيترسل، ووش يحتاج نجهزه."));
+ const qs=el("div","qs");ATT.forEach(a=>qs.append(buildAtt(...a)));sec.append(qs);main.append(sec);
+ const a=el("a");a.href="#s7";a.append(document.createTextNode("المرفقات"));const c=el("span");c.dataset.sec="s7";a.append(c);rail.append(a);}
+
+function isFilled(k){const f=fields[k];return f.el.value.trim()!==""||(f.sel&&f.sel.value!=="")}
+function progress(){
+  const ks=Object.keys(fields); let n=0;
+  ks.forEach(k=>{const on=isFilled(k);fields[k].card.classList.toggle("filled",on);if(on)n++});
+  document.getElementById("count").textContent=n+" / "+ks.length;
+  document.getElementById("bar").style.width=(n/ks.length*100)+"%";
+  rail.querySelectorAll("span[data-sec]").forEach(sp=>{const sec=document.getElementById(sp.dataset.sec);const all=sec.querySelectorAll(".q").length,f=sec.querySelectorAll(".q.filled").length;sp.textContent=f+"/"+all});
+}
+progress();
+
+function ago(t){const m=Math.round((Date.now()-t)/60000);if(m<1)return "الحين";if(m<60)return "قبل "+m+" د";const h=Math.round(m/60);if(h<24)return "قبل "+h+" س";return new Date(t).toLocaleDateString("ar-SA-u-nu-latn")}
+function renderMeta(k){
+  const f=fields[k], r=f.remote; if(f.dirty) return;
+  if(!r){f.meta.textContent="";f.meta.className="meta";return}
+  f.meta.className="meta"; f.meta.textContent="محفوظ"+(r.by?" · "+r.by:"")+" · "+ago(r.at||Date.now());
+}
+const conn=document.getElementById("conn");
+function setConn(t,err){conn.textContent=t;conn.className="status"+(err?" err":"")}
+async function save(k){
+  const f=fields[k];
+  if(f.saving){f.again=true;return}
+  f.saving=true;
+  const by=whoEl.value.trim().slice(0,40), text=f.el.value.slice(0,8000), status=f.sel?f.sel.value:"";
+  try{
+    const r=await fetch(FS+":commit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({writes:[{
+      update:{name:DOC(k),fields:{text:{stringValue:text},status:{stringValue:status},by:{stringValue:by}}},
+      updateTransforms:[{fieldPath:"ts",setToServerValue:"REQUEST_TIME"}]}]})});
+    if(!r.ok) throw new Error(r.status);
+    f.remote={text,status,by,at:Date.now()}; f.dirty=false; renderMeta(k); setConn("متصل · ينحفظ تلقائياً");
+  }catch(e){f.meta.textContent="ما انحفظ، تأكد من النت وجرب تكتب مرة ثانية";f.meta.className="meta"; setConn("فيه مشكلة بالحفظ",true)}
+  f.saving=false; if(f.again){f.again=false;save(k)}
+}
+async function load(){
+  try{
+    const r=await fetch(FS+"/keemart_rfq?pageSize=300"); if(!r.ok) throw new Error(r.status);
+    const j=await r.json();
+    (j.documents||[]).forEach(d=>{
+      const k=d.name.split("/").pop(), f=fields[k]; if(!f) return; const x=d.fields||{};
+      const v={text:x.text?.stringValue||"",status:x.status?.stringValue||"",by:x.by?.stringValue||"",at:Date.parse(x.ts?.timestampValue||d.updateTime)};
+      f.remote=v;
+      if(!f.dirty&&!f.saving&&document.activeElement!==f.el&&f.el.value!==v.text) f.el.value=v.text;
+      if(f.sel&&!f.dirty&&document.activeElement!==f.sel) f.sel.value=v.status;
+      renderMeta(k);
+    });
+    progress(); setConn("متصل · ينحفظ تلقائياً");
+  }catch(e){setConn("ما قدرت أجيب الأجوبة، حدّث الصفحة",true)}
+}
+load(); setInterval(()=>{if(!document.hidden)load()},10000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
+</script>
+</body>
+</html>
